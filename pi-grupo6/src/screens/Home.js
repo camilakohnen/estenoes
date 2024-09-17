@@ -1,6 +1,6 @@
 import React from "react";
 import ClaSinBoton from "../components/VerTodos/ClaSinBoton";
-import NovSinBoton from "../components/VerTodos/NovSinBoton";
+import NovSinBoton from "../components/VerTodos/novedades";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import Busqueda from "../components/Busqueda/busqueda";
 

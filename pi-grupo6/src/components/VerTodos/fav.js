@@ -10,6 +10,7 @@ class Fav extends Component {
         this.state = {
             verMas: false,
             peliculas: [],
+            cargando: true, // Estado de carga
             esFavorito: true,
         };
     }
@@ -17,7 +18,7 @@ class Fav extends Component {
     componentDidMount() {
         let storage = localStorage.getItem('pelisFavs');
         if (storage) {
-            console.log('Películas en storage:', storage); 
+            console.log('Películas en storage:', storage); // Verifica el contenido
             let arrParseado = JSON.parse(storage);
             if (arrParseado.length) {
                 Promise.all(arrParseado.map(id =>
@@ -26,10 +27,18 @@ class Fav extends Component {
                         .catch((err) => console.log('Error al obtener película:', err))
                 ))
                 .then((peliculas) => {
-                    this.setState({ peliculas });
+                    console.log('Películas cargadas:', peliculas); // Verifica las películas cargadas
+                    this.setState({ peliculas, cargando: false });
                 })
-                .catch((err) => console.log('Error al cargar películas:', err));
+                .catch((err) => {
+                    console.log('Error al cargar películas:', err);
+                    this.setState({ cargando: false }); // Detener carga en caso de error
+                });
+            } else {
+                this.setState({ cargando: false }); // Detener carga si no hay favoritos
             }
+        } else {
+            this.setState({ cargando: false }); // Detener carga si no hay datos en storage
         }
     }
 
@@ -54,33 +63,33 @@ class Fav extends Component {
     }
 
     render() {
+        if (this.state.cargando) {
+            return <p>Cargando...</p>; // Mensaje o spinner de carga
+        }
+
         return (
             <>
                 <h2>Favoritos</h2>
                 <section className="card-container">
-                    {this.state.peliculas.length > 0 ? (
-                        this.state.peliculas.map(e => (
-                            <div className="character-card" key={e.id}>
-                                <img src={`https://image.tmdb.org/t/p/w342/${e.poster_path}`} alt={e.title} />
-                                <Link to={`/detalle/id/${e.id}`}>
-                                    <h2>{e.title}</h2>
-                                </Link>
-                                <section className='extra'>
-                                    <p>Adultos: {e.adult ? "atp" : "+18"}</p>
-                                </section>
-                                <button onClick={() => this.sacarDeStorage(e.id)}>
-                                    Sacar de favs
-                                </button>
-                                <p>{e.release_date}</p>
-                                {this.state.verMas && <p>{e.overview}</p>}
-                                <button onClick={() => this.verMasVerMenos()} className='more'>
-                                    {this.state.verMas ? 'Ver menos' : 'Ver más'}
-                                </button>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No hay películas favoritas.</p> 
-                    )}
+                    {this.state.peliculas.map(e => (
+                        <div className="character-card" key={e.id}>
+                            <img src={`https://image.tmdb.org/t/p/w342/${e.poster_path}`} alt={e.title} />
+                            <Link to={`/detalle/id/${e.id}`}>
+                                <h2>{e.title}</h2>
+                            </Link>
+                            <section className='extra'>
+                                <p>Adultos: {e.adult ? "atp" : "+18"}</p>
+                            </section>
+                            <button onClick={() => this.sacarDeStorage(e.id)}>
+                                Sacar de favs
+                            </button>
+                            <p>{e.release_date}</p>
+                            {this.state.verMas && <p>{e.overview}</p>}
+                            <button onClick={() => this.verMasVerMenos()} className='more'>
+                                {this.state.verMas ? 'Ver menos' : 'Ver más'}
+                            </button>
+                        </div>
+                    ))}
                 </section>
             </>
         );
