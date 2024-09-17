@@ -53,8 +53,6 @@ class Clasico extends Component {
         })
     }
 
-
-
     sacarDeStorage(id){
         let storage = localStorage.getItem('pelisFavs')
         if(storage !== null ){

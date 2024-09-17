@@ -1,64 +1,118 @@
-import React,  {Component}  from "react";
-const APIKEY = '73bbcaff8fd928767c5142a00f422fa2'
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
+
+const APIKEY = '73bbcaff8fd928767c5142a00f422fa2';
 
 class Details extends Component {
-    constructor(props){
-        super(props)
+    constructor(props) {
+        super(props);
         this.state = {
-            verMas : false,
-            peliculas:[]
-        }
+            verMas: false,
+            pelicula: null,
+            esFavorito: false,
+        };
     }
 
-    componentDidMount(){
-            fetch(`https://api.themoviedb.org/3/movie/${this.props.id}?api_key=${APIKEY}`)
+    componentDidMount() {
+        const { id } = this.props.match.params; // Obtener el ID desde los parámetros de la URL
+        fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${APIKEY}`)
             .then((resp) => resp.json())
             .then((data) => {
-                console.log('data favs',data);
+                console.log('Data de la película:', data);
                 this.setState({
-                    peliculas: data,
-                })
+                    pelicula: data
+                });
+                // Verificar si la película es favorita al cargar
+                this.verificarFavorito(data.id);
             })
-            .catch((err) => console.log(err)) 
-        }
-    
+            .catch((err) => console.log('Error al obtener datos:', err));
+    }
 
-   /* filtrarPeliculas(nombrePelicula){
-      const peliculasFiltradas = this.state.peliculas.filter(nombrePelicula.id)
-      this.setState({
-          peliculas: peliculasFiltradas
-      })
-    }*/
-
-    verMasVerMenos(){
-        if(this.state.verMas === true){
-            this.setState({
-                verMas: false 
-            })
-        } else {
-            this.setState({
-                verMas: true, 
-            })
+    verificarFavorito(id) {
+        let storage = localStorage.getItem('pelisFavs');
+        if (storage !== null) {
+            let storageParseado = JSON.parse(storage);
+            if (storageParseado.includes(id)) {
+                this.setState({ esFavorito: true });
+            }
         }
     }
 
-    render(){
-        
-        return(console.log(this.peliculas))
-       /* return(
+    agregarAStorage() {
+        const { pelicula } = this.state;
+        if (pelicula) {
+            const id = pelicula.id;
+            let storage = localStorage.getItem('pelisFavs');
+            if (storage !== null) {
+                let storageParseado = JSON.parse(storage);
+                if (!storageParseado.includes(id)) {
+                    storageParseado.push(id);
+                    let storageStringificado = JSON.stringify(storageParseado);
+                    localStorage.setItem('pelisFavs', storageStringificado);
+                    this.setState({ esFavorito: true });
+                }
+            } else {
+                let arrFavs = [id];
+                let favsStringificado = JSON.stringify(arrFavs);
+                localStorage.setItem('pelisFavs', favsStringificado);
+                this.setState({ esFavorito: true });
+            }
+        }
+    }
+
+    sacarDeStorage() {
+        const { pelicula } = this.state;
+        if (pelicula) {
+            const id = pelicula.id;
+            let storage = localStorage.getItem('pelisFavs');
+            if (storage !== null) {
+                let storageParseado = JSON.parse(storage);
+                let filtrado = storageParseado.filter(idFav => idFav !== id);
+                let storageStringificado = JSON.stringify(filtrado);
+                localStorage.setItem('pelisFavs', storageStringificado);
+                this.setState({ esFavorito: false });
+            }
+        }
+    }
+
+    verMasVerMenos() {
+        this.setState(prevState => ({
+            verMas: !prevState.verMas
+        }));
+    }
+
+    render() {
+        const { pelicula, verMas, esFavorito } = this.state;
+
+        if (!pelicula) {
+            return null; // No muestra nada si no hay datos de película
+        }
+
+        return (
             <div className="character-card">
-                <img src={this.filtrarPeliculas.data.poster_path} alt="" />
-                <h2>{this.filtrarPeliculas.data.title}</h2>
+                <img src={`https://image.tmdb.org/t/p/w342/${pelicula.poster_path}`} alt={pelicula.title} />
+                <h2>{pelicula.title}</h2>
                 <section className='extra'>
-                    <p> Adultos: {this.filtrarPeliculas.data.adult ? "atp" : "+18"}</p>
-                    <p>{this.filtrarPeliculas.data.release_date}</p>
-                    <p>{this.filtrarPeliculas.data.overview}</p>
-                </section>               
-                
+                    <p>Adultos: {pelicula.adult ? "atp" : "+18"}</p>
+                    <p>{pelicula.release_date}</p>
+                    
+                    {esFavorito ? (
+                        <button onClick={() => this.sacarDeStorage()}>
+                            Sacar de favs
+                        </button>
+                    ) : (
+                        <button onClick={() => this.agregarAStorage()}>
+                            Agregar a favoritos
+                        </button>
+                    )}
+                </section>
+                {
+                        this.state.verMas === true ? <p>{pelicula.overview}</p> : null 
+                }
                 <button onClick={ () => this.verMasVerMenos()} className='more'> Ver mas</button>
-            </div> 
-        ) */
+            </div>
+        );
     }
 }
 
-export default Details
+export default withRouter(Details);
