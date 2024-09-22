@@ -10,7 +10,7 @@ class Fav extends Component {
         this.state = {
             verMas: false,
             peliculas: [],
-            cargando: true, // Estado de carga
+            cargando: true, 
             esFavorito: true,
         };
     }
@@ -18,7 +18,7 @@ class Fav extends Component {
     componentDidMount() {
         let storage = localStorage.getItem('pelisFavs');
         if (storage) {
-            console.log('Películas en storage:', storage); // Verifica el contenido
+            console.log('Películas en storage:', storage);
             let arrParseado = JSON.parse(storage);
             if (arrParseado.length) {
                 Promise.all(arrParseado.map(id =>
@@ -27,18 +27,18 @@ class Fav extends Component {
                         .catch((err) => console.log('Error al obtener película:', err))
                 ))
                 .then((peliculas) => {
-                    console.log('Películas cargadas:', peliculas); // Verifica las películas cargadas
+                    console.log('Películas cargadas:', peliculas); 
                     this.setState({ peliculas, cargando: false });
                 })
                 .catch((err) => {
                     console.log('Error al cargar películas:', err);
-                    this.setState({ cargando: false }); // Detener carga en caso de error
+                    this.setState({ cargando: false }); 
                 });
             } else {
-                this.setState({ cargando: false }); // Detener carga si no hay favoritos
+                this.setState({ cargando: false }); 
             }
         } else {
-            this.setState({ cargando: false }); // Detener carga si no hay datos en storage
+            this.setState({ cargando: false }); 
         }
     }
 
@@ -85,10 +85,12 @@ class Fav extends Component {
                             </button>
                             <p>{e.release_date}</p>
                             {this.state.verMas && <p>{e.overview}</p>}
-                            <button onClick={() => this.verMasVerMenos()} className='more'>
-                                {this.state.verMas ? 'Ver menos' : 'Ver más'}
-                            </button>
-                        </div>
+                           
+                            {
+                        this.state.verMas === true ? <p>{this.props.data}</p> : null 
+                }
+                <button onClick={ () => this.verMasVerMenos()} className='more'> Ver mas</button>
+            </div>
                     ))}
                 </section>
             </>
