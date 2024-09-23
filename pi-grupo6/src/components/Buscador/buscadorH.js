@@ -1,29 +1,27 @@
 import React, {Component} from 'react';
 
-class Buscador extends Component{
+class BuscadorH extends Component{
     constructor(props){
         super(props)
         this.state = {
-            filtrar: ''
+            busqueda: ''
         }
     }
 
     evitarsubmit(event){
-        console.log(event);
         event.preventDefault()
+        this.props.history.push('/results', {busqueda: this.state.busqueda}) // nos redirecciona a la pantalla que digamos
     }
 
     contorlarInput(event){
-        this.setState({filtrar: event.target.value}, () => 
-            this.props.filtrarPeliculas(this.state.filtrar)
-        )
+        this.setState({busqueda: event.target.value})
     }
 
     render(){
         return(
             <form onSubmit={(e) => this.evitarsubmit(e)}>
                 <input 
-                    value={this.state.filtrar}
+                    value={this.state.busqueda}
                     onChange={(event)=> this.contorlarInput(event)} 
                 />
                 <button type='submit'>Enviar</button>
@@ -32,4 +30,4 @@ class Buscador extends Component{
     }
 }
 
-export default Buscador;
+export default BuscadorH;

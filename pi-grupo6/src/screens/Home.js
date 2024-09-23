@@ -1,14 +1,15 @@
 import React from "react";
 import ClaSinBoton from "../components/VerTodos/ClaSinBoton";
 import NovSinBoton from "../components/VerTodos/novedades";
+import BuscadorH from "../components/Buscador/buscadorH";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import Busqueda from "../components/Busqueda/busqueda";
 
-function Home() {
-    console.log('Este es mi jSon')
+function Home(props) {
+
     return (
         <React.Fragment>
-            <Busqueda/>
+            <h1>Buscar</h1>
+            <BuscadorH history={props.history}/>
             <main>
                 <Link to={"/novedades"}><h2>Novedades</h2></Link>
                 <NovSinBoton/>
@@ -17,6 +18,7 @@ function Home() {
             </main>
         </React.Fragment>
     );
+    
   }
   
   export default Home;

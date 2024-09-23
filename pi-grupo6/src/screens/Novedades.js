@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Novedades from '../components/Ver/novedades';
-
+import Buscador from '../components/Buscador/buscador'
 const APIKEY = '73bbcaff8fd928767c5142a00f422fa2';
 
 class NovedadesConBoton extends Component {
@@ -9,7 +9,9 @@ class NovedadesConBoton extends Component {
         this.state = {
             verMas : false,
             peliculas:[],
-            MasMenos : false, 
+            peliculasb: [],
+            paginaACargar: 2,
+            
         }
     }
 
@@ -20,10 +22,20 @@ class NovedadesConBoton extends Component {
             console.log(data);
             
             this.setState({
-                peliculas: data.results
+                peliculas: data.results,
+                peliculasb: data.results,
             })
         })
         .catch((err) => console.log(err))
+    }
+
+    filtrarPeliculas(nombrePelicula){
+        const peliculasFiltradas = this.state.peliculasb.filter(
+            (elm) => elm.title.toLowerCase().includes(nombrePelicula.toLowerCase())
+        )
+        this.setState({
+            peliculas: peliculasFiltradas
+        })
     }
 
     MasMenosPeliculas(){
@@ -41,7 +53,8 @@ class NovedadesConBoton extends Component {
     render(){
         return (
             <>
-                <h2>Clasicos</h2> 
+                <h2>Novedades</h2> 
+                <Buscador filtrarPeliculas={(nombre) => this.filtrarPeliculas(nombre)}/>
                 <section className="card-container">
                     {this.state.peliculas.slice(0,3).map((elm)=> <Novedades data={elm}/>)}
                     {this.state.MasMenos === true ? <>{this.state.peliculas.slice(3, this.state.peliculas.length).map((elm)=> <Novedades data={elm}/>)}</> : null }

@@ -90,7 +90,7 @@ class Fav extends Component {
                         this.state.verMas === true ? <p>{this.props.data}</p> : null 
                 }
                 <button onClick={ () => this.verMasVerMenos()} className='more'> Ver mas</button>
-            </div>
+                </div>
                     ))}
                 </section>
             </>
